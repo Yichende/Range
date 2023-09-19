@@ -153,7 +153,7 @@ onMounted(() => {
   // domPromise.then(() => waterFall);
   setTimeout(() => {
     waterFall();
-  }, 100);
+  }, 1000);
 });
 
 const test = () => {
