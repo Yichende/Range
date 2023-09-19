@@ -1,18 +1,19 @@
 <template>
-  <!-- BUG: v-if 导致 DOM 渲染失效 -->
-  <div class="container" v-if="isReloadAlive">
+  <!-- BUG: v-if 导致 DOM 渲染失效, 保留isReloadAlive -->
+  <div class="container" v-if="true">
     <div v-for="(item, i) in imgArr" ref="boxRef" class="box">
       <div class="box-img" ref="boxImgRef">
         <img :src="item" :key="i" alt="" />
       </div>
     </div>
   </div>
-  <!-- <button @click="test" style="width: 200px; height: 50px;">test</button> -->
+  <button @click="test" style="width: 200px; height: 50px; z-index: 100;">test</button>
+  <button @click="test1" style="width: 200px; height: 50px; z-index: 100;">true</button>
+  <button @click="test2" style="width: 200px; height: 50px; z-index: 100;">false</button>
 </template>
 
 <script setup lang=ts>
-import { nextTick } from 'process';
-import { onMounted, onBeforeMount, ref } from 'vue';
+import { onMounted, onBeforeMount, nextTick, ref } from 'vue';
 
 // 获取图片
 const imgList = import.meta.glob('/src/assets/imgs/*.*', { eager: true });
@@ -33,9 +34,9 @@ const debounce = function (func: Function, delay = 1000) {
 // 刷新
 const isReloadAlive = ref(true);
 
-function reload() {
+async function reload() {
   isReloadAlive.value = false;
-  nextTick(() => {
+  await nextTick(() => {
     isReloadAlive.value = true;
     console.log("触发了reload");
   })
@@ -86,7 +87,7 @@ const waterFall = () => {
     if (i < imgNum.value) {
       // 第一行各个图片的高度
       BoxHeightArr.push(boxArr[i].offsetHeight);
-      console.log("testBoxArrLength",boxArr.length)
+      console.log("testBoxArrLength", boxArr.length)
       console.log("test i<imgNum:", i);
       console.log("testBoxHeightArr", BoxHeightArr[i]);
       console.log(" ");
@@ -107,7 +108,7 @@ const waterFall = () => {
   }
   console.log("imgWidth", imgWidth.value);
   console.log("imgNum", imgNum.value);
-  reload();
+  // reload();
 }
 
 
@@ -127,6 +128,20 @@ onBeforeMount(() => {
     imgArr.value.push(key);
   });
 });
+
+const domPromise = new Promise((resolve) => {
+  // 获取视窗宽度
+  getWinWidth();
+  // 获取图片宽度
+  getImgWidth();
+  // 获取第一行图片数量
+  getImgNum();
+
+  setTimeout(() => {
+    resolve("resolve");
+  }, 1000)
+});
+
 onMounted(() => {
   // 获取视窗宽度
   getWinWidth();
@@ -135,7 +150,10 @@ onMounted(() => {
   // 获取第一行图片数量
   getImgNum();
 
-  waterFall();
+  // domPromise.then(() => waterFall);
+  setTimeout(() => {
+    waterFall();
+  }, 100);
 });
 
 const test = () => {
@@ -145,6 +163,17 @@ const test = () => {
   // getImgNum();
   // console.log(imgNum.value);
   waterFall();
+  // reload();
+}
+
+const test1 = () => {
+  isReloadAlive.value = true;
+  console.log("isReload", isReloadAlive.value);
+}
+
+const test2 = () => {
+  isReloadAlive.value = false;
+  console.log("isReload", isReloadAlive.value);
 }
 </script>
 
@@ -157,7 +186,8 @@ const test = () => {
 .container {
   position: relative;
   /* TODO */
-  overflow: hidden;
+  overflow: scroll;
+  height: calc(100vh);
 }
 
 .box {
