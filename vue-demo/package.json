@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "path": "^0.12.7",
+    "three": "^0.156.1",
     "vue": "^3.3.4",
     "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@types/node": "^20.6.0",
+    "@types/three": "^0.156.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "typescript": "^5.0.2",
     "unplugin-auto-import": "^0.16.6",
